@@ -20,9 +20,15 @@ local function ButtonPressed(inp, typing)
 
 		for i, p in ipairs(CollectionService:GetTagged('Proximity')) do
 			if Enum.KeyCode[p.Key.Value] == proper then
+				local yindex = p:FindFirstChildWhichIsA('BindableEvent') 
+				local xindex = p:FindFirstChildWhichIsA('RemoteEvent')
 				if HumanoidRootPart and p.Active.Value then
 					if (HumanoidRootPart.Position - p.Position).Magnitude < p.Range.Value then
-						p.Set:FireServer(true)
+						if xindex then
+							p.Set:FireServer(true)
+						else
+							TweenService:Create(p.Progress, TweenInfo.new(p.Time.Value, Enum.EasingStyle.Cubic), {Value = p.Time.Value}):Play()
+						end
 					end
 				end
 			end
@@ -38,17 +44,16 @@ local function ButtonReleased(inp, typing)
 
 		for i, p in ipairs(CollectionService:GetTagged('Proximity')) do
 			if Enum.KeyCode[p.Key.Value] == proper then
+				local yindex = p:FindFirstChildWhichIsA('BindableEvent') 
+				local xindex = p:FindFirstChildWhichIsA('RemoteEvent')
+				
 				if HumanoidRootPart and p.Active.Value then
 					if (HumanoidRootPart.Position - p.Position).Magnitude < p.Range.Value then
-						local Progress = p.Get:InvokeServer(); if Progress == p.Time.Value then
-							
-							local yindex = p:FindFirstChildWhichIsA('BindableEvent') 
-
+						local Progress = if xindex then p.Get:InvokeServer() else p.Progress.Value; if Progress == p.Time.Value then
+					
 							if yindex then
 								yindex:Fire()
 							else
-								local xindex = p:FindFirstChildWhichIsA('RemoteEvent')
-
 								if xindex then
 									xindex:FireServer()
 								end
@@ -65,7 +70,11 @@ local function ButtonReleased(inp, typing)
 						--
 						-- /
 						local function Stop()
-							p.Set:FireServer()
+							if xindex then
+								p.Set:FireServer()
+							else
+								TweenService:Create(p.Progress, TweenInfo.new(1/60, Enum.EasingStyle.Cubic), {Value = 0}):Play()
+							end
 						end; for i = 1,10 do
 							task.wait(1/30)
 							Stop()
