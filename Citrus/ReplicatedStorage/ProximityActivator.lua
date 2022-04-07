@@ -83,23 +83,6 @@ function proximity:init()
 	
 	--
 	--
-	local Receive = Instance.new('RemoteFunction', self.Location); Receive.Name = 'Get'
-	Receive.OnServerInvoke = function(c, x)
-		return self.Location.Progress.Value
-	end
-	
-	local Set = Instance.new('RemoteEvent', self.Location); Set.Name = 'Set'
-	Set.OnServerEvent:Connect(function(c, x)
-		c = c.Character; if x then
-			if (c:FindFirstChild('HumanoidRootPart')) and self.Location then
-				if (c.HumanoidRootPart.Position - self.Location.Position).Magnitude <= self.Range then
-					TweenService:Create(self.Location.Progress, TweenInfo.new(self.Location.Time.Value, Enum.EasingStyle.Cubic), {Value = self.Location.Time.Value}):Play()
-				end
-			end
-		else
-			TweenService:Create(self.Location.Progress, TweenInfo.new(1/60, Enum.EasingStyle.Cubic), {Value = 0}):Play()
-		end
-	end)
 	
 	if RunService:IsClient() then
 		local x = Instance.new('BindableEvent', self.Location)
@@ -107,6 +90,24 @@ function proximity:init()
 	else
 		local x = Instance.new('RemoteEvent', self.Location)
 		x.OnServerEvent:Connect(self.Fire)
+		
+		local Receive = Instance.new('RemoteFunction', self.Location); Receive.Name = 'Get'
+		Receive.OnServerInvoke = function(c, x)
+			return self.Location.Progress.Value
+		end
+
+		local Set = Instance.new('RemoteEvent', self.Location); Set.Name = 'Set'
+		Set.OnServerEvent:Connect(function(c, x)
+			c = c.Character; if x then
+				if (c:FindFirstChild('HumanoidRootPart')) and self.Location then
+					if (c.HumanoidRootPart.Position - self.Location.Position).Magnitude <= self.Range then
+						TweenService:Create(self.Location.Progress, TweenInfo.new(self.Location.Time.Value, Enum.EasingStyle.Cubic), {Value = self.Location.Time.Value}):Play()
+					end
+				end
+			else
+				TweenService:Create(self.Location.Progress, TweenInfo.new(1/60, Enum.EasingStyle.Cubic), {Value = 0}):Play()
+			end
+		end)
 	end
 	
 	--
