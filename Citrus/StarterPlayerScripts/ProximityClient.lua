@@ -21,7 +21,7 @@ local function ButtonPressed(inp, typing)
 		for i, p in ipairs(CollectionService:GetTagged('Proximity')) do
 			if Enum.KeyCode[p.Key.Value] == proper then
 				local yindex = p:FindFirstChildWhichIsA('BindableEvent') 
-				local xindex = p:FindFirstChildWhichIsA('RemoteEvent')
+				local xindex = p:FindFirstChild('ServerEvent')
 				if HumanoidRootPart and p.Active.Value then
 					if (HumanoidRootPart.Position - p.Position).Magnitude < p.Range.Value then
 						if xindex then
@@ -45,7 +45,7 @@ local function ButtonReleased(inp, typing)
 		for i, p in ipairs(CollectionService:GetTagged('Proximity')) do
 			if Enum.KeyCode[p.Key.Value] == proper then
 				local yindex = p:FindFirstChildWhichIsA('BindableEvent') 
-				local xindex = p:FindFirstChildWhichIsA('RemoteEvent')
+				local xindex = p:FindFirstChild('ServerEvent')
 				
 				if HumanoidRootPart and p.Active.Value then
 					if (HumanoidRootPart.Position - p.Position).Magnitude < p.Range.Value then
