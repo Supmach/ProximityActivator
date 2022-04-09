@@ -1,9 +1,10 @@
 -- ! THIS IS A MODULE SCRIPT !
-
+--
+--
 -- ProximityActivator Class
 --
 --
--- # April 5 2022
+-- # April 9 2022
 -- / 
 --
 -- Written by Champus
@@ -88,8 +89,16 @@ function proximity:init()
 		local x = Instance.new('BindableEvent', self.Location)
 		x.Event:Connect(self.Fire)
 	else
-		local x = Instance.new('RemoteEvent', self.Location)
-		x.OnServerEvent:Connect(self.Fire)
+		local x = Instance.new('RemoteEvent', self.Location); x.Name = 'ServerEvent'
+		x.OnServerEvent:Connect(function(...)
+			local c = select(1, ...).Character; if c then
+				if c:FindFirstChild('HumanoidRootPart') and self.Location then
+					if (c.HumanoidRootPart.Position - self.Location.Position).Magnitude <= self.Range then
+						self.Fire(...)
+					end
+				end
+			end
+		end)
 		
 		local Receive = Instance.new('RemoteFunction', self.Location); Receive.Name = 'Get'
 		Receive.OnServerInvoke = function(c, x)
